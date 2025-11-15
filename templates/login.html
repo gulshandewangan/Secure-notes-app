@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Secure Notes{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">Login</h2>
+                <form id="loginForm">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                </form>
+                <div class="text-center mt-3">
+                    <p>Don't have an account? <a href="/register">Register here</a></p>
+                </div>
+                <div id="message" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const messageDiv = document.getElementById('message');
+    
+    try {
+        const response = await fetch('/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username, password })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            window.location.href = '/dashboard';
+        } else {
+            messageDiv.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+        }
+    } catch (error) {
+        messageDiv.innerHTML = '<div class="alert alert-danger">An error occurred. Please try again.</div>';
+    }
+});
+</script>
+{% endblock %}
